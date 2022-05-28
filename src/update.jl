@@ -1,16 +1,5 @@
 """
-Assuming an affine transition model
-x_n+1 | x_n ~ N(x_n+1; A x_n, Q)
-and an observation `data`.
-"""
-function predict(m::AbstractVector, C::AbstractMatrix, A::AbstractMatrix, Q::AbstractMatrix)
-    mnew = A * m
-    Cnew = A * C * A' + Q
-    return mnew, Cnew
-end
-
-"""
-Assuming an affine observation model
+Assumes an affine observation model
 y | x ~ N(y; H x + b, R)
 and an observation `data`.
 """
@@ -22,7 +11,6 @@ function update(
     b::AbstractVector,
     R::AbstractMatrix,
 )
-    @info "??" H m b
     y_hat = H * m + b
     S = Symmetric(H * C * H' + R)
 
@@ -44,7 +32,7 @@ function linearize(h::Function, m::AbstractVector)
 end
 
 """
-Assuming a nonlinear observation model
+Assumes a nonlinear observation model
 y | x ~ N(y; h(x), R)
 and an observation `data`.
 """
