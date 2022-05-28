@@ -35,8 +35,11 @@ function update(
 end
 
 function linearize(h::Function, m::AbstractVector)
-    H = ForwardDiff.jacobian(h, m)
-    b = h(m) - H * m
+    result = DiffResults.JacobianResult(m)
+    result = ForwardDiff.jacobian!(result, h, m)
+    H = DiffResults.jacobian(result)
+    h = DiffResults.value(result)
+    b = h - H * m
     return H, b
 end
 
