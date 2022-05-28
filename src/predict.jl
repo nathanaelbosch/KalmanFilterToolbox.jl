@@ -1,18 +1,48 @@
 """
+    predict(m, C, A, b, Q)
+
+Predict the next state estimate for an affine Gaussian transition.
+
 Given an affine transition model
-x_n+1 | x_n ~ N(x_n+1; A x_n + b, Q)
+``x_{n+1} \\mid x_n \\sim \\mathcal{N}(x_{n+1}; A x_n + b, Q)``
 and a current state estimate
-x_n ~ N(m, C)
-compute the prediction estimate
-x_n+1 ~ N(A m + b, A C A^T +Q)
+``x_n \\sim \\mathcal{N} (m, C)``,
+`predict` computes the prediction estimate
+```math
+\\begin{aligned}
+x_{n+1} \\sim \\mathcal{N} (A m + b, A C A^\\top + Q).
+\\end{aligned}
+```
 """
-function predict(m::AbstractVector, C::AbstractMatrix, A::AbstractMatrix, b::AbstractVector, Q::AbstractMatrix)
+function predict(
+    m::AbstractVector,
+    C::AbstractMatrix,
+    A::AbstractMatrix,
+    b::AbstractVector,
+    Q::AbstractMatrix,
+)
     mnew = A * m + b
     Cnew = A * C * A' + Q
     return mnew, Cnew
 end
 
+"""
+    get_backward_transition(m, C, mpred, Cpred, A)
 
+Compute the affine backward transition model used for smoothing.
+
+Returns parameters for a transition
+``x_n^S \\mid x_{n+1}^S \\sim \\mathcal{N}(G x_{n+1}^S + b, Λ)``,
+computed with
+```math
+\\begin{aligned}
+G &= C * A^\\top C_p^{-1} \\\\
+b &= m - G m_p \\\\
+Λ &= C - G C_p G^\\top.
+\\end{aligned}
+```
+To smooth, just [`predict`](@ref) backwards.
+"""
 function get_backward_transition(m, C, mpred, Cpred, A)
     G = C * A' / Cpred
     b = m - G * mpred

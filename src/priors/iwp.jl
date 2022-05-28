@@ -1,10 +1,26 @@
-"""Integrated Wiener Process"""
-struct IWP
+"""
+    IWP(wiener_process_dimension::Integer, num_derivatives::Integer)
+
+Integrated Wiener Process.
+
+By itself it does not have much utility right now, but together with
+[`discretize`](@ref)
+it provides discrete transition matrices that are useful for defining
+discrete state-space models.
+"""
+Base.@kwdef struct IWP
     wiener_process_dimension::Int
     num_derivatives::Int
 end
 
-function discretize(iwp::IWP, h::Real)
+"""
+    discretize(iwp::IWP, dt::Real)
+
+Discretize the integrated Wiener process.
+
+Computes the discrete transition matrices for a time step of size `dt`.
+"""
+function discretize(iwp::IWP, dt::Real)
     d = iwp.wiener_process_dimension
     q = iwp.num_derivatives
     D = d * (q + 1)
@@ -14,7 +30,7 @@ function discretize(iwp::IWP, h::Real)
     @fastmath function fill_A!(A, h::Real)
         A .= 0
         for i in 1:D
-            A[i,i] = 1
+            A[i, i] = 1
         end
         val = one(h)
         for i in 1:q
@@ -53,8 +69,13 @@ function discretize(iwp::IWP, h::Real)
     return A, Q
 end
 
+"""
+    projectionmatrix(iwp::IWP, derivative::Integer)
+
+Compute the projection matrix that maps the state to the specified derivative.
+"""
 function projectionmatrix(iwp::IWP, derivative::Integer)
     d = iwp.wiener_process_dimension
     q = iwp.num_derivatives
-    return kron(diagm(0 => ones(d)), [i==(derivative+1) ? 1 : 0 for i in 1:q+1]')
+    return kron(diagm(0 => ones(d)), [i == (derivative + 1) ? 1 : 0 for i in 1:q+1]')
 end
