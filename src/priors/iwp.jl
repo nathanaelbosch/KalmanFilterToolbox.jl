@@ -1,9 +1,8 @@
-
+"""Integrated Wiener Process"""
 struct IWP
     wiener_process_dimension::Int
     num_derivatives::Int
 end
-
 
 function discretize(iwp::IWP, h::Real)
     d = iwp.wiener_process_dimension
