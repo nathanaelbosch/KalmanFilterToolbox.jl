@@ -16,9 +16,12 @@ function smooth(
     mnext::AbstractVector,
     Cnext::AbstractMatrix,
     A::AbstractMatrix,
+    b::AbstractVector,
     Q::AbstractMatrix,
 )
-    mpred, Cpred = predict(mcurr, Ccurr, A, Q)
+    G, d, L = get_backward_transition(m, C, mpred, Cpred, A)
+    return predict(mnext, Cnext, G, d, L)
+    mpred, Cpred = predict(mcurr, Ccurr, A, b, Q)
 
     G = Ccurr * A' / Cpred
 

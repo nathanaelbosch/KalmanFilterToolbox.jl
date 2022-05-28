@@ -11,9 +11,10 @@ using LinearAlgebra
 
     A = rand(d, d)
     Q = rand(d, d) |> Symmetric |> collect
+    b = zeros(d)
 
     # Predict
-    mp, Cp = KalmanFilterToolbox.predict(m, C, A, Q)
+    mp, Cp = KalmanFilterToolbox.predict(m, C, A, b, Q)
     @test mp == A * m
     @test Cp == A * C * A' + Q
 
@@ -34,7 +35,7 @@ using LinearAlgebra
     @test all(abs.(Cf) .< 1e-14)
 
     # Smooth
-    ms, Cs = KalmanFilterToolbox.smooth(m, C, mf, Cf, A, Q)
-    _msp, _Csp = KalmanFilterToolbox.predict(ms, Cs, A, Q)
+    ms, Cs = KalmanFilterToolbox.smooth(m, C, mf, Cf, A, b, Q)
+    _msp, _Csp = KalmanFilterToolbox.predict(ms, Cs, A, b, Q)
     @test norm(_msp - data) < norm(mp - data)
 end
