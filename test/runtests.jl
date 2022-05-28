@@ -2,5 +2,6 @@ using KalmanFilterToolbox
 using Test
 
 @testset "KalmanFilterToolbox.jl" begin
-    # Write your tests here.
+    include("priors.jl")
+    include("filtsmoothfuncs.jl")
 end

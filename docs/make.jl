@@ -1,7 +1,12 @@
 using KalmanFilterToolbox
 using Documenter
 
-DocMeta.setdocmeta!(KalmanFilterToolbox, :DocTestSetup, :(using KalmanFilterToolbox); recursive=true)
+DocMeta.setdocmeta!(
+    KalmanFilterToolbox,
+    :DocTestSetup,
+    :(using KalmanFilterToolbox);
+    recursive=true,
+)
 
 makedocs(;
     modules=[KalmanFilterToolbox],
@@ -13,12 +18,7 @@ makedocs(;
         canonical="https://nathanaelbosch.github.io/KalmanFilterToolbox.jl",
         assets=String[],
     ),
-    pages=[
-        "Home" => "index.md",
-    ],
+    pages=["Home" => "index.md"],
 )
 
-deploydocs(;
-    repo="github.com/nathanaelbosch/KalmanFilterToolbox.jl",
-    devbranch="main",
-)
+deploydocs(; repo="github.com/nathanaelbosch/KalmanFilterToolbox.jl", devbranch="main")
