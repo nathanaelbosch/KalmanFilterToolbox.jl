@@ -7,12 +7,10 @@ using LinearAlgebra
     d = 5
 
     m = rand(d)
-    CR = LowerTriangular(rand(d, d))
-    C = CR'CR
+    C = rand(d, d) |> Symmetric |> collect
 
     A = rand(d, d)
-    QR = LowerTriangular(rand(d, d))
-    Q = QR'QR
+    Q = rand(d, d) |> Symmetric |> collect
 
     # Predict
     mp, Cp = KalmanFilterToolbox.predict(m, C, A, Q)
@@ -34,4 +32,9 @@ using LinearAlgebra
     mf, Cf = KalmanFilterToolbox.update(mp, Cp, data, H, b, R)
     @test all(abs.(mf) .< 1e-14)
     @test all(abs.(Cf) .< 1e-14)
+
+    # Smooth
+    ms, Cs = KalmanFilterToolbox.smooth(m, C, mf, Cf, A, Q)
+    _msp, _Csp = KalmanFilterToolbox.predict(ms, Cs, A, Q)
+    @test norm(_msp - data) < norm(mp - data)
 end
