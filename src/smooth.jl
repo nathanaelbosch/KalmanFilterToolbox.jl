@@ -24,6 +24,6 @@ function smooth(
     G = Ccurr * A' / Cpred
 
     mnew = mcurr + G * (mnext - mpred)
-    Cnew = Ccurr - G * (Cnext - Cpred) * G'
+    Cnew = Ccurr + G * (Cnext - Cpred) * G'
     return mnew, Cnew
 end

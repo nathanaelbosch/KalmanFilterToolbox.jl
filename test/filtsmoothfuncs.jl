@@ -64,4 +64,10 @@ using LinearAlgebra
         @test norm(_msp - data) < norm(mp - data)
     end
 
+    @testset "smooth (via backward transition)" begin
+        G, b, Λ = KalmanFilterToolbox.get_backward_transition(m, C, mp, Cp, A)
+        ms2, Cs2 = KalmanFilterToolbox.predict(mf, Cf, G, b, Λ)
+        @test ms ≈ ms2
+        @test Cs ≈ Cs2
+    end
 end
