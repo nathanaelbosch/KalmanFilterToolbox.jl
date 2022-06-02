@@ -68,7 +68,6 @@ function sqrt_update(
     return mnew, CLnew
 end
 
-
 """
     linearize(h::Function, m::AbstractVector)
 
