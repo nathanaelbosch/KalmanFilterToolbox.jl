@@ -34,6 +34,42 @@ function update(
 end
 
 """
+    sqrt_update(m, CL, y, H, b, RL)
+
+Update / correct the state based on the affine observation, in square-root form.
+
+In principle, this function does the same as [`update`](@ref), but the covariances are
+given as and returned in square-root form.
+That is, the equivalent call to
+`update(m, C, y, H, b, R)`
+would be
+`sqrt_update(m, CL, y, H, b, RL)`
+where `C = CL * CL'` and `R = RL * RL'`.
+"""
+function sqrt_update(
+    m::AbstractVector,
+    CL::AbstractMatrix,
+    y::AbstractVector,
+    H::AbstractMatrix,
+    b::AbstractVector,
+    RL::AbstractMatrix,
+)
+    d = length(b)
+
+    y_hat = H * m + b
+
+    R = qr([RL H*CL; zero(H') CL]').R
+    SL = R[1:d, 1:d]
+    K = (SL \ R[1:d, d+1:end])'
+
+    mnew = m + K * (y - y_hat)
+    CLnew = R[d+1:end, d+1:end]'
+
+    return mnew, CLnew
+end
+
+
+"""
     linearize(h::Function, m::AbstractVector)
 
 Linearize the nonlinear function `h` at the location `m`.

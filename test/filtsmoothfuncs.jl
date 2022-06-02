@@ -29,21 +29,33 @@ using LinearAlgebra
         @test Cp ≈ (CpL_sqrt * CpL_sqrt')
     end
 
-    # Update
     H, b = rand(d, d), rand(d)
     data = rand(d)
-    R = 1e-6I(d)
-    mf, Cf = KalmanFilterToolbox.update(mp, Cp, data, H, b, R)
-    @test norm(H * mf + b - data) < norm(H * mp + b - data)
-    @test norm(Cf) < norm(Cp)
+    R = 1e-2I(d)
+    local mf, Cf
+    @testset "update" begin
+        mf, Cf = KalmanFilterToolbox.update(mp, Cp, data, H, b, R)
+        @test norm(H * mf + b - data) < norm(H * mp + b - data)
+        @test norm(Cf) < norm(Cp)
+    end
 
-    # Update with noiseless zero data
-    H, b = I(d), zeros(d)
-    data = zeros(d)
-    R = zeros(d, d)
-    mf, Cf = KalmanFilterToolbox.update(mp, Cp, data, H, b, R)
-    @test all(abs.(mf) .< 1e-14)
-    @test all(abs.(Cf) .< 1e-14)
+    @testset "update (square-root)" begin
+        RL = sqrt.(R)
+        @test R ≈ RL * RL'
+        mf_sqrt, CfL_sqrt =
+            KalmanFilterToolbox.sqrt_update(mp, CpL_sqrt, data, H, b, sqrt.(R))
+        @test mf ≈ mf_sqrt
+        @test Cf ≈ (CfL_sqrt * CfL_sqrt')
+    end
+
+    @testset "update (noiseless zero data)" begin
+        H, b = I(d), zeros(d)
+        data = zeros(d)
+        R = zeros(d, d)
+        mf, Cf = KalmanFilterToolbox.update(mp, Cp, data, H, b, R)
+        @test all(abs.(mf) .< 1e-14)
+        @test all(abs.(Cf) .< 1e-14)
+    end
 
     # Smooth
     ms, Cs = KalmanFilterToolbox.smooth(m, C, mf, Cf, A, b, Q)
