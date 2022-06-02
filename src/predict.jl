@@ -49,3 +49,28 @@ function get_backward_transition(m, C, mpred, Cpred, A)
     Λ = C - G * Cpred * G'
     return G, b, Λ
 end
+
+"""
+    sqrt_predict(m, CL, A, b, QL)
+
+Predict the next state estimate for an affine Gaussian transition, in square-root form.
+
+In principle, this function does the same as [`predict`](@ref), but the covariances are
+given as and returned in square-root form.
+That is, the equivalent call to
+`predict(m, C, A, b, Q)`
+would be
+`sqrt_predict(m, CL, A, b, QL)`,
+where `C = CL * CL'` and `Q = QL * QL'`.
+"""
+function sqrt_predict(
+    m::AbstractVector,
+    CL::AbstractMatrix,
+    A::AbstractMatrix,
+    b::AbstractVector,
+    QL::AbstractMatrix,
+)
+    mnew = A * m + b
+    CLnew = qr([A * CL QL]').R'
+    return mnew, CLnew
+end

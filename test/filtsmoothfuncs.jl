@@ -7,16 +7,27 @@ using LinearAlgebra
     d = 5
 
     m = rand(d)
-    C = rand(d, d) |> Symmetric |> collect
+    CL = rand(d, d)
+    C = CL * CL'
 
     A = rand(d, d)
-    Q = rand(d, d) |> Symmetric |> collect
+    QL = rand(d, d)
+    Q = QL * QL'
     b = zeros(d)
 
-    # Predict
-    mp, Cp = KalmanFilterToolbox.predict(m, C, A, b, Q)
-    @test mp == A * m
-    @test Cp == A * C * A' + Q
+    local mp, Cp
+    @testset "predict" begin
+        mp, Cp = KalmanFilterToolbox.predict(m, C, A, b, Q)
+        @test mp == A * m
+        @test Cp == A * C * A' + Q
+    end
+
+    local mp_sqrt, CpL_sqrt
+    @testset "predict (square-root)" begin
+        mp_sqrt, CpL_sqrt = KalmanFilterToolbox.sqrt_predict(m, CL, A, b, QL)
+        @test mp == mp_sqrt
+        @test Cp ≈ (CpL_sqrt * CpL_sqrt')
+    end
 
     # Update
     H, b = rand(d, d), rand(d)
