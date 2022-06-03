@@ -31,7 +31,7 @@ using LinearAlgebra
 
     H, b = rand(d, d), rand(d)
     data = rand(d)
-    R = 1e-2I(d)
+    R = Matrix(1e-2I, d, d)
     local mf, Cf
     @testset "update" begin
         mf, Cf = KalmanFilterToolbox.update(mp, Cp, data, H, b, R)
