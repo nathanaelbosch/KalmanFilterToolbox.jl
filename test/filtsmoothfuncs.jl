@@ -5,6 +5,7 @@ using LinearAlgebra
 @testset "filtsmoothfuncs" begin
     # Setup
     d = 5
+    dy = 3
 
     m = rand(d)
     CL = rand(d, d)
@@ -29,9 +30,9 @@ using LinearAlgebra
         @test Cp ≈ (CpL_sqrt * CpL_sqrt')
     end
 
-    H, b = rand(d, d), rand(d)
-    data = rand(d)
-    R = Matrix(1e-2I, d, d)
+    H, b = rand(dy, d), rand(dy)
+    data = rand(dy)
+    R = Matrix(1e-2I, dy, dy)
     local mf, Cf
     @testset "update" begin
         mf, Cf = KalmanFilterToolbox.update(mp, Cp, data, H, b, R)
