@@ -49,6 +49,13 @@ using LinearAlgebra
         @test Cf ≈ (CfL_sqrt * CfL_sqrt')
     end
 
+    @testset "EKF update" begin
+        h(x) = H * x + c
+        mf_ekf, Cf_ekf = KalmanFilterToolbox.ekf_update(mp, Cp, data, h, R)
+        @test mf_ekf ≈ mf
+        @test Cf_ekf ≈ Cf
+    end
+
     @testset "update (noiseless zero data)" begin
         _H, _b = I(d), zeros(d)
         _data = zeros(d)
