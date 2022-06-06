@@ -61,8 +61,8 @@ using LinearAlgebra
     local ms, Cs
     @testset "smooth" begin
         ms, Cs = KalmanFilterToolbox.smooth(m, C, mf, Cf, A, b, Q)
-        _msp, _Csp = KalmanFilterToolbox.predict(ms, Cs, A, b, Q)
-        @test norm(_msp - data) < norm(mp - data)
+        @test size(ms) == size(m)
+        @test size(Cs) == size(C)
     end
 
     @testset "smooth (via backward transition)" begin
