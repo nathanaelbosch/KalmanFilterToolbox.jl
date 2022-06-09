@@ -5,6 +5,7 @@ using LinearAlgebra
 @testset "filtsmoothfuncs" begin
     # Setup
     d = 5
+    dy = 3
 
     m = rand(d)
     CL = rand(d, d)
@@ -29,13 +30,13 @@ using LinearAlgebra
         @test Cp ≈ (CpL_sqrt * CpL_sqrt')
     end
 
-    H, b = rand(d, d), rand(d)
-    data = rand(d)
-    R = Matrix(1e-2I, d, d)
+    H, c = rand(dy, d), rand(dy)
+    data = rand(dy)
+    R = Matrix(1e-2I, dy, dy)
     local mf, Cf
     @testset "update" begin
-        mf, Cf = KalmanFilterToolbox.update(mp, Cp, data, H, b, R)
-        @test norm(H * mf + b - data) < norm(H * mp + b - data)
+        mf, Cf = KalmanFilterToolbox.update(mp, Cp, data, H, c, R)
+        @test norm(H * mf + c - data) < norm(H * mp + c - data)
         @test norm(Cf) < norm(Cp)
     end
 
@@ -43,25 +44,32 @@ using LinearAlgebra
         RL = sqrt.(R)
         @test R ≈ RL * RL'
         mf_sqrt, CfL_sqrt =
-            KalmanFilterToolbox.sqrt_update(mp, CpL_sqrt, data, H, b, sqrt.(R))
+            KalmanFilterToolbox.sqrt_update(mp, CpL_sqrt, data, H, c, sqrt.(R))
         @test mf ≈ mf_sqrt
         @test Cf ≈ (CfL_sqrt * CfL_sqrt')
     end
 
+    @testset "EKF update" begin
+        h(x) = H * x + c
+        mf_ekf, Cf_ekf = KalmanFilterToolbox.ekf_update(mp, Cp, data, h, R)
+        @test mf_ekf ≈ mf
+        @test Cf_ekf ≈ Cf
+    end
+
     @testset "update (noiseless zero data)" begin
-        H, b = I(d), zeros(d)
-        data = zeros(d)
-        R = zeros(d, d)
-        mf, Cf = KalmanFilterToolbox.update(mp, Cp, data, H, b, R)
-        @test all(abs.(mf) .< 1e-14)
-        @test all(abs.(Cf) .< 1e-14)
+        _H, _b = I(d), zeros(d)
+        _data = zeros(d)
+        _R = zeros(d, d)
+        _mf, _Cf = KalmanFilterToolbox.update(mp, Cp, _data, _H, _b, _R)
+        @test all(abs.(_mf) .< 1e-14)
+        @test all(abs.(_Cf) .< 1e-14)
     end
 
     local ms, Cs
     @testset "smooth" begin
         ms, Cs = KalmanFilterToolbox.smooth(m, C, mf, Cf, A, b, Q)
-        _msp, _Csp = KalmanFilterToolbox.predict(ms, Cs, A, b, Q)
-        @test norm(_msp - data) < norm(mp - data)
+        @test size(ms) == size(m)
+        @test size(Cs) == size(C)
     end
 
     @testset "smooth (via backward transition)" begin

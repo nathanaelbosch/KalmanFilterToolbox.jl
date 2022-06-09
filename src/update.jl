@@ -83,11 +83,8 @@ b &= h(m) - H * m.
 The Jacobian is computed with automatic differentiation via ForwardDiff.jl.
 """
 function linearize(h::Function, m::AbstractVector)
-    result = DiffResults.JacobianResult(m)
-    result = ForwardDiff.jacobian!(result, h, m)
-    H = DiffResults.jacobian(result)
-    h = DiffResults.value(result)
-    b = h - H * m
+    H = ForwardDiff.jacobian(h, m)
+    b = h(m) - H * m
     return H, b
 end
 
