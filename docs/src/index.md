@@ -1,14 +1,14 @@
 ```@meta
-CurrentModule = KalmanFilterToolbox
+CurrentModule = GaussMarkovToolbox
 ```
 
-# KalmanFilterToolbox
+# GaussMarkovToolbox
 
-Documentation for [KalmanFilterToolbox](https://github.com/nathanaelbosch/KalmanFilterToolbox.jl).
+Documentation for [GaussMarkovToolbox](https://github.com/nathanaelbosch/GaussMarkovToolbox.jl).
 
 ```@index
 ```
 
 ```@autodocs
-Modules = [KalmanFilterToolbox]
+Modules = [GaussMarkovToolbox]
 ```

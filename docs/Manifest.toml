@@ -116,7 +116,7 @@ git-tree-sha1 = "3c837543ddb02250ef42f4738347454f95079d4e"
 uuid = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 version = "0.21.3"
 
-[[deps.KalmanFilterToolbox]]
+[[deps.GaussMarkovToolbox]]
 deps = ["DiffResults", "ForwardDiff", "LinearAlgebra"]
 path = ".."
 uuid = "f63bbba1-7f9b-4c97-88ca-14c23099b99d"

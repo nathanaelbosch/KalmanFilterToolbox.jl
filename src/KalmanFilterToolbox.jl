@@ -1,4 +1,4 @@
-module KalmanFilterToolbox
+module GaussMarkovToolbox
 
 using LinearAlgebra
 using ForwardDiff

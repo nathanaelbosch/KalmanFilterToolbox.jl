@@ -1,24 +1,24 @@
-using KalmanFilterToolbox
+using GaussMarkovToolbox
 using Documenter
 
 DocMeta.setdocmeta!(
-    KalmanFilterToolbox,
+    GaussMarkovToolbox,
     :DocTestSetup,
-    :(using KalmanFilterToolbox);
+    :(using GaussMarkovToolbox);
     recursive=true,
 )
 
 makedocs(;
-    modules=[KalmanFilterToolbox],
+    modules=[GaussMarkovToolbox],
     authors="Nathanael Bosch <nathanael.bosch@uni-tuebingen.de> and contributors",
-    repo="https://github.com/nathanaelbosch/KalmanFilterToolbox.jl/blob/{commit}{path}#{line}",
-    sitename="KalmanFilterToolbox.jl",
+    repo="https://github.com/nathanaelbosch/GaussMarkovToolbox.jl/blob/{commit}{path}#{line}",
+    sitename="GaussMarkovToolbox.jl",
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
-        canonical="https://nathanaelbosch.github.io/KalmanFilterToolbox.jl",
+        canonical="https://nathanaelbosch.github.io/GaussMarkovToolbox.jl",
         assets=String[],
     ),
     pages=["Home" => "index.md"],
 )
 
-deploydocs(; repo="github.com/nathanaelbosch/KalmanFilterToolbox.jl", devbranch="main")
+deploydocs(; repo="github.com/nathanaelbosch/GaussMarkovToolbox.jl", devbranch="main")

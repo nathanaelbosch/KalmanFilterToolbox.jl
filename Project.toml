@@ -1,4 +1,4 @@
-name = "KalmanFilterToolbox"
+name = "GaussMarkovToolbox"
 uuid = "f63bbba1-7f9b-4c97-88ca-14c23099b99d"
 authors = ["Nathanael Bosch <nathanael.bosch@uni-tuebingen.de> and contributors"]
 version = "0.1.0"

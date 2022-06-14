@@ -1,4 +1,4 @@
-using KalmanFilterToolbox
+using GaussMarkovToolbox
 using Test
 
 h = rand()
@@ -7,8 +7,8 @@ h = rand()
 @testset "Test non-preconditioned IWP (d=2,q=2)" begin
     d, q = 2, 2
 
-    iwp = KalmanFilterToolbox.IWP(d, q)
-    Ah, Qh = KalmanFilterToolbox.discretize(iwp, h)
+    iwp = GaussMarkovToolbox.IWP(d, q)
+    Ah, Qh = GaussMarkovToolbox.discretize(iwp, h)
 
     AH_22_IBM = [
         1 h h^2/2 0 0 0

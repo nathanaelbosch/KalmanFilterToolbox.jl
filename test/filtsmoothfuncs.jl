@@ -1,4 +1,4 @@
-using KalmanFilterToolbox
+using GaussMarkovToolbox
 using Test
 using LinearAlgebra
 
@@ -18,14 +18,14 @@ using LinearAlgebra
 
     local mp, Cp
     @testset "predict" begin
-        mp, Cp = KalmanFilterToolbox.predict(m, C, A, b, Q)
+        mp, Cp = GaussMarkovToolbox.predict(m, C, A, b, Q)
         @test mp == A * m
         @test Cp == A * C * A' + Q
     end
 
     local mp_sqrt, CpL_sqrt
     @testset "predict (square-root)" begin
-        mp_sqrt, CpL_sqrt = KalmanFilterToolbox.sqrt_predict(m, CL, A, b, QL)
+        mp_sqrt, CpL_sqrt = GaussMarkovToolbox.sqrt_predict(m, CL, A, b, QL)
         @test mp == mp_sqrt
         @test Cp ≈ (CpL_sqrt * CpL_sqrt')
     end
@@ -35,7 +35,7 @@ using LinearAlgebra
     R = Matrix(1e-2I, dy, dy)
     local mf, Cf
     @testset "update" begin
-        mf, Cf = KalmanFilterToolbox.update(mp, Cp, data, H, c, R)
+        mf, Cf = GaussMarkovToolbox.update(mp, Cp, data, H, c, R)
         @test norm(H * mf + c - data) < norm(H * mp + c - data)
         @test norm(Cf) < norm(Cp)
     end
@@ -44,14 +44,14 @@ using LinearAlgebra
         RL = sqrt.(R)
         @test R ≈ RL * RL'
         mf_sqrt, CfL_sqrt =
-            KalmanFilterToolbox.sqrt_update(mp, CpL_sqrt, data, H, c, sqrt.(R))
+            GaussMarkovToolbox.sqrt_update(mp, CpL_sqrt, data, H, c, sqrt.(R))
         @test mf ≈ mf_sqrt
         @test Cf ≈ (CfL_sqrt * CfL_sqrt')
     end
 
     @testset "EKF update" begin
         h(x) = H * x + c
-        mf_ekf, Cf_ekf = KalmanFilterToolbox.ekf_update(mp, Cp, data, h, R)
+        mf_ekf, Cf_ekf = GaussMarkovToolbox.ekf_update(mp, Cp, data, h, R)
         @test mf_ekf ≈ mf
         @test Cf_ekf ≈ Cf
     end
@@ -60,21 +60,21 @@ using LinearAlgebra
         _H, _b = I(d), zeros(d)
         _data = zeros(d)
         _R = zeros(d, d)
-        _mf, _Cf = KalmanFilterToolbox.update(mp, Cp, _data, _H, _b, _R)
+        _mf, _Cf = GaussMarkovToolbox.update(mp, Cp, _data, _H, _b, _R)
         @test all(abs.(_mf) .< 1e-14)
         @test all(abs.(_Cf) .< 1e-14)
     end
 
     local ms, Cs
     @testset "smooth" begin
-        ms, Cs = KalmanFilterToolbox.smooth(m, C, mf, Cf, A, b, Q)
+        ms, Cs = GaussMarkovToolbox.smooth(m, C, mf, Cf, A, b, Q)
         @test size(ms) == size(m)
         @test size(Cs) == size(C)
     end
 
     @testset "smooth (via backward transition)" begin
-        G, b, Λ = KalmanFilterToolbox.get_backward_transition(m, C, mp, Cp, A)
-        ms2, Cs2 = KalmanFilterToolbox.predict(mf, Cf, G, b, Λ)
+        G, b, Λ = GaussMarkovToolbox.get_backward_transition(m, C, mp, Cp, A)
+        ms2, Cs2 = GaussMarkovToolbox.predict(mf, Cf, G, b, Λ)
         @test ms ≈ ms2
         @test Cs ≈ Cs2
     end

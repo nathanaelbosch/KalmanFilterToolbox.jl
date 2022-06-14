@@ -1,3 +1,3 @@
 [deps]
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
-KalmanFilterToolbox = "f63bbba1-7f9b-4c97-88ca-14c23099b99d"
+GaussMarkovToolbox = "f63bbba1-7f9b-4c97-88ca-14c23099b99d"

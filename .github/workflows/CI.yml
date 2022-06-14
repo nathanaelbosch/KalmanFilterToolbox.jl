@@ -62,6 +62,6 @@ jobs:
         run: |
           julia --project=docs -e '
             using Documenter: DocMeta, doctest
-            using KalmanFilterToolbox
-            DocMeta.setdocmeta!(KalmanFilterToolbox, :DocTestSetup, :(using KalmanFilterToolbox); recursive=true)
-            doctest(KalmanFilterToolbox)'
+            using GaussMarkovToolbox
+            DocMeta.setdocmeta!(GaussMarkovToolbox, :DocTestSetup, :(using GaussMarkovToolbox); recursive=true)
+            doctest(GaussMarkovToolbox)'
