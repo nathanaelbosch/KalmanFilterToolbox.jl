@@ -2,6 +2,7 @@ module KalmanFilterToolbox
 
 using LinearAlgebra
 using ForwardDiff
+using ToeplitzMatrices, SpecialMatrices
 
 include("priors/iwp.jl")
 include("predict.jl")

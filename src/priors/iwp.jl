@@ -20,51 +20,21 @@ Discretize the integrated Wiener process.
 
 Computes the discrete transition matrices for a time step of size `dt`.
 """
-function discretize(iwp::IWP, dt::Real)
+@fastmath function discretize(iwp::IWP, dt::Real)
     d = iwp.wiener_process_dimension
     q = iwp.num_derivatives
-    D = d * (q + 1)
 
-    A, Q = zeros(D, D), zeros(D, D)
+    v = 0:q
 
-    @fastmath function fill_A!(A, dt::Real)
-        A .= 0
-        for i in 1:D
-            A[i, i] = 1
-        end
-        val = one(dt)
-        for i in 1:q
-            val = val * dt / i
-            for k in 0:d-1
-                for j in 1:q+1-i
-                    @inbounds A[j+k*(q+1), j+k*(q+1)+i] = val
-                end
-            end
-        end
-    end
+    f = factorial.(v)
+    A_breve = TriangularToeplitz(dt .^ v ./ f, :U) |> Matrix
 
-    @fastmath function _transdiff_ibm_element(row::Int, col::Int, dt::Real)
-        idx = 2 * q + 1 - row - col
-        fact_rw = factorial(q - row)
-        fact_cl = factorial(q - col)
-        return dt^idx / (idx * fact_rw * fact_cl)
-    end
-    @fastmath function fill_Q!(Q, dt::Real)
-        Q .= 0
-        val = one(dt)
-        @simd for col in 0:q
-            @simd for row in col:q
-                val = _transdiff_ibm_element(row, col, dt)
-                @simd for i in 0:d-1
-                    @inbounds Q[1+col+i*(q+1), 1+row+i*(q+1)] = val
-                    @inbounds Q[1+row+i*(q+1), 1+col+i*(q+1)] = val
-                end
-            end
-        end
-    end
+    e = (2 * q + 1 .- v .- v')
+    fr = reverse(f)
+    Q_breve = @. dt^e / (e * fr * fr')
 
-    fill_A!(A, dt)
-    fill_Q!(Q, dt)
+    A = kron(I(d), A_breve)
+    Q = kron(I(d), Q_breve)
 
     return A, Q
 end
@@ -78,4 +48,32 @@ function projectionmatrix(iwp::IWP, derivative::Integer)
     d = iwp.wiener_process_dimension
     q = iwp.num_derivatives
     return kron(diagm(0 => ones(d)), [i == (derivative + 1) ? 1 : 0 for i in 1:q+1]')
+end
+
+@fastmath function preconditioner(iwp::IWP, dt::Real)
+    d = iwp.wiener_process_dimension
+    q = iwp.num_derivatives
+
+    v = q:-1:0
+    P_breve = Diagonal(@. sqrt(dt) * dt^v / factorial(v))
+    P = kron(I(d), P_breve)
+    return P
+end
+
+"""
+    preconditioned_discretize(iwp::IWP)
+"""
+@fastmath function preconditioned_discretize(iwp::IWP)
+    d = iwp.wiener_process_dimension
+    q = iwp.num_derivatives
+
+    dt = 1
+
+    A_breve = binomial.(q:-1:0, (q:-1:0)')
+    Q_breve = Cauchy(collect(3.0:-1.0:0.0), collect(4.0:-1.0:1.0))
+
+    A = kron(I(d), A_breve)
+    Q = kron(I(d), Q_breve)
+
+    return A, Q
 end
