@@ -13,15 +13,7 @@ Base.@kwdef struct IWP
     num_derivatives::Int
 end
 
-"""
-    discretize(iwp::IWP, dt::Real)
-
-Discretize the integrated Wiener process.
-
-Computes the discrete transition matrices for a time step of size `dt`.
-"""
-@fastmath function discretize(iwp::IWP, dt::Real)
-    d = iwp.wiener_process_dimension
+function discretize_1d(iwp::IWP, dt::Real)
     q = iwp.num_derivatives
 
     v = 0:q
@@ -33,24 +25,26 @@ Computes the discrete transition matrices for a time step of size `dt`.
     fr = reverse(f)
     Q_breve = @. dt^e / (e * fr * fr')
 
+    return A_breve, Q_breve
+end
+
+"""
+    discretize(iwp::IWP, dt::Real)
+
+Discretize the integrated Wiener process.
+
+Computes the discrete transition matrices for a time step of size `dt`.
+"""
+function discretize(iwp::IWP, dt::Real)
+    A_breve, Q_breve = discretize_1d(iwp, dt)
+    d = iwp.wiener_process_dimension
     A = kron(I(d), A_breve)
     Q = kron(I(d), Q_breve)
-
     return A, Q
 end
 
-"""
-    projectionmatrix(iwp::IWP, derivative::Integer)
 
-Compute the projection matrix that maps the state to the specified derivative.
-"""
-function projectionmatrix(iwp::IWP, derivative::Integer)
-    d = iwp.wiener_process_dimension
-    q = iwp.num_derivatives
-    return kron(diagm(0 => ones(d)), [i == (derivative + 1) ? 1 : 0 for i in 1:q+1]')
-end
-
-@fastmath function preconditioner(iwp::IWP, dt::Real)
+function preconditioner(iwp::IWP, dt::Real)
     d = iwp.wiener_process_dimension
     q = iwp.num_derivatives
 
@@ -60,14 +54,9 @@ end
     return P
 end
 
-"""
-    preconditioned_discretize(iwp::IWP)
-"""
-@fastmath function preconditioned_discretize(iwp::IWP)
+function preconditioned_discretize(iwp::IWP)
     d = iwp.wiener_process_dimension
     q = iwp.num_derivatives
-
-    dt = 1
 
     A_breve = binomial.(q:-1:0, (q:-1:0)')
     Q_breve = Cauchy(collect(3.0:-1.0:0.0), collect(4.0:-1.0:1.0))
