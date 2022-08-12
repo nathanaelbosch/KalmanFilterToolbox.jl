@@ -24,4 +24,8 @@ makedocs(;
     ],
 )
 
-deploydocs(; repo="github.com/nathanaelbosch/KalmanFilterToolbox.jl", devbranch="main")
+deploydocs(;
+    repo="github.com/nathanaelbosch/KalmanFilterToolbox.jl",
+    devbranch="main",
+    push_preview = true,
+)
