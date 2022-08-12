@@ -1,4 +1,4 @@
-using KalmanFilterToolbox
+import KalmanFilterToolbox as KFT
 using Test
 
 h = rand()
@@ -7,8 +7,8 @@ h = rand()
 @testset "Test non-preconditioned IWP (d=2,q=2)" begin
     d, q = 2, 2
 
-    iwp = KalmanFilterToolbox.IWP(d, q)
-    Ah, Qh = KalmanFilterToolbox.discretize(iwp, h)
+    iwp = KFT.IWP(d, q)
+    Ah, Qh = KFT.discretize(iwp, h)
 
     AH_22_IBM = [
         1 h h^2/2 0 0 0
@@ -30,4 +30,16 @@ h = rand()
             0 0 0 h^3/6 h^2/2 h
         ]
     @test QH_22_IBM ≈ Qh
+end
+
+@testset "IOUP with zero drift is IWP" begin
+    d, q = 2, 2
+
+    iwp = KFT.IWP(d, q)
+    ioup = KFT.IOUP(d, q, 0.0)
+
+    A_iwp, Q_iwp = KFT.discretize(iwp, h)
+    A_ioup, Q_ioup = KFT.discretize(ioup, h)
+    @test A_iwp ≈ A_ioup
+    @test Q_iwp ≈ Q_ioup
 end
