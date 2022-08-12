@@ -27,5 +27,5 @@ makedocs(;
 deploydocs(;
     repo="github.com/nathanaelbosch/KalmanFilterToolbox.jl",
     devbranch="main",
-    push_preview = true,
+    push_preview=true,
 )

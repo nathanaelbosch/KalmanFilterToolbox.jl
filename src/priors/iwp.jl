@@ -43,7 +43,6 @@ function discretize(iwp::IWP, dt::Real)
     return A, Q
 end
 
-
 function preconditioner(iwp::IWP, dt::Real)
     d = iwp.wiener_process_dimension
     q = iwp.num_derivatives
