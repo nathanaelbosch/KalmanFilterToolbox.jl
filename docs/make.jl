@@ -18,7 +18,10 @@ makedocs(;
         canonical="https://nathanaelbosch.github.io/KalmanFilterToolbox.jl",
         assets=String[],
     ),
-    pages=["Home" => "index.md"],
+    pages=[
+        "Home" => "index.md"
+        "Examples" => ["Sampling from Priors" => "prior_sampling.md"]
+    ],
 )
 
 deploydocs(; repo="github.com/nathanaelbosch/KalmanFilterToolbox.jl", devbranch="main")
