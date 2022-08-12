@@ -2,13 +2,22 @@
 CurrentModule = KalmanFilterToolbox
 ```
 
-# KalmanFilterToolbox
+# KalmanFilterToolbox.jl
 
-Documentation for [KalmanFilterToolbox](https://github.com/nathanaelbosch/KalmanFilterToolbox.jl).
+Handy code for the Gaussian filtering and smoothing aficionado.
 
-```@index
+
+### API documentation:
+```@contents
+Pages = ["filtsmooth.md", "priors.md"]
+Depth = 2
 ```
 
-```@autodocs
-Modules = [KalmanFilterToolbox]
+### Examples:
+```@contents
+Pages = ["prior_sampling.md"]
+Depth = 1
 ```
+
+### See also
+- [MarkovKernels.jl](https://github.com/filtron/MarkovKernels.jl)

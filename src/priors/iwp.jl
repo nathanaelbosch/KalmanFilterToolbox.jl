@@ -1,16 +1,16 @@
 """
     IWP(wiener_process_dimension::Integer, num_derivatives::Integer)
 
-Integrated Wiener Process.
+Integrated Wiener process.
 
 By itself it does not have much utility right now, but together with
 [`discretize`](@ref)
 it provides discrete transition matrices that are useful for defining
 discrete state-space models.
 """
-Base.@kwdef struct IWP
-    wiener_process_dimension::Int
-    num_derivatives::Int
+Base.@kwdef struct IWP{I<:Integer} <: AbstractGaussMarkovProcess
+    wiener_process_dimension::I
+    num_derivatives::I
 end
 
 function discretize_1d(iwp::IWP, dt::Real)
@@ -29,30 +29,14 @@ function discretize_1d(iwp::IWP, dt::Real)
 end
 
 """
-    discretize(iwp::IWP, dt::Real)
+    preconditioned_discretize(p::IWP)
 
-Discretize the integrated Wiener process.
+Preconditioned discretization of the integrated Wiener process.
 
-Computes the discrete transition matrices for a time step of size `dt`.
+For the IWP, the preconditioned discretization is independend of the current step size and
+known in closed form. This is very helpful for numerically stable implementations and high
+efficiency.
 """
-function discretize(iwp::IWP, dt::Real)
-    A_breve, Q_breve = discretize_1d(iwp, dt)
-    d = iwp.wiener_process_dimension
-    A = kron(I(d), A_breve)
-    Q = kron(I(d), Q_breve)
-    return A, Q
-end
-
-function preconditioner(iwp::IWP, dt::Real)
-    d = iwp.wiener_process_dimension
-    q = iwp.num_derivatives
-
-    v = q:-1:0
-    P_breve = Diagonal(@. sqrt(dt) * dt^v / factorial(v))
-    P = kron(I(d), P_breve)
-    return P
-end
-
 function preconditioned_discretize(iwp::IWP)
     d = iwp.wiener_process_dimension
     q = iwp.num_derivatives
@@ -64,4 +48,12 @@ function preconditioned_discretize(iwp::IWP)
     Q = kron(I(d), Q_breve)
 
     return A, Q
+end
+
+function to_1d_sde(p::IWP)
+    q = p.num_derivatives
+    F_breve = diagm(1 => ones(q))
+    L_breve = zeros(q + 1)
+    L_breve[end] = 1.0
+    return LTISDE(F_breve, L_breve)
 end

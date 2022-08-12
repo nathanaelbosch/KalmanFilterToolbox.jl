@@ -20,6 +20,10 @@ makedocs(;
     ),
     pages=[
         "Home" => "index.md"
+        "API" => [
+            "Filtering and Smoothing" => "filtsmooth.md"
+            "Gauss-Markov Processes" => "priors.md"
+        ]
         "Examples" => ["Sampling from Priors" => "prior_sampling.md"]
     ],
 )
