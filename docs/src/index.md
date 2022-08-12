@@ -8,7 +8,3 @@ Documentation for [KalmanFilterToolbox](https://github.com/nathanaelbosch/Kalman
 
 ```@index
 ```
-
-```@autodocs
-Modules = [KalmanFilterToolbox]
-```
