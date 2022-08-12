@@ -1,18 +1,21 @@
 using KalmanFilterToolbox
 using Test
 using LinearAlgebra
+using Random
 
 @testset "filtsmoothfuncs" begin
+    rng = MersenneTwister(1)
+
     # Setup
     d = 5
     dy = 3
 
-    m = rand(d)
-    CL = rand(d, d)
+    m = rand(rng, d)
+    CL = rand(rng, d, d)
     C = CL * CL'
 
-    A = rand(d, d)
-    QL = rand(d, d)
+    A = rand(rng, d, d)
+    QL = rand(rng, d, d)
     Q = QL * QL'
     b = zeros(d)
 
@@ -30,8 +33,8 @@ using LinearAlgebra
         @test Cp ≈ (CpL_sqrt * CpL_sqrt')
     end
 
-    H, c = rand(dy, d), rand(dy)
-    data = rand(dy)
+    H, c = rand(rng, dy, d), rand(rng, dy)
+    data = rand(rng, dy)
     R = Matrix(1e-2I, dy, dy)
     local mf, Cf
     @testset "update" begin
