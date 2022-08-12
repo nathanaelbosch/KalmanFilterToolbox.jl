@@ -4,6 +4,7 @@ using LinearAlgebra
 using ForwardDiff
 using ToeplitzMatrices, SpecialMatrices
 
+abstract type AbstractGaussMarkovProcess end
 include("priors/utils.jl")
 include("priors/ltisde.jl")
 include("priors/iwp.jl")
