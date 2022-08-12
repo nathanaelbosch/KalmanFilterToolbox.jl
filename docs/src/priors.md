@@ -18,4 +18,13 @@ Matern
 ```@docs
 discretize
 projectionmatrix
+preconditioner
+matrix_fraction_decomposition
+preconditioned_discretize
+```
+
+## SDE and tools
+```@docs
+LTISDE
+to_1d_sde
 ```
