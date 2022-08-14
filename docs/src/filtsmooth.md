@@ -16,6 +16,7 @@ get_backward_transition
 ```
 
 ## Approximate inference via linearization
+
 ```@docs
 linearize
 ekf_update
