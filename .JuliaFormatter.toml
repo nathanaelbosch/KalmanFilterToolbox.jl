@@ -12,3 +12,5 @@ short_to_long_function_def = false
 whitespace_in_kwargs = false # originally true
 whitespace_ops_in_indices = false # originally true
 whitespace_typedefs = false # originally true
+
+format_markdown = true
