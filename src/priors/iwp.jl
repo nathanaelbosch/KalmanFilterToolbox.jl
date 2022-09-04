@@ -42,7 +42,7 @@ function preconditioned_discretize(iwp::IWP)
     q = iwp.num_derivatives
 
     A_breve = binomial.(q:-1:0, (q:-1:0)')
-    Q_breve = Cauchy(collect(3.0:-1.0:0.0), collect(4.0:-1.0:1.0))
+    Q_breve = Cauchy(collect(q:-1.0:0.0), collect((q+1):-1.0:1.0))
 
     A = kron(I(d), A_breve)
     Q = kron(I(d), Q_breve)
