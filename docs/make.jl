@@ -24,7 +24,11 @@ makedocs(;
             "Filtering and Smoothing" => "filtsmooth.md"
             "Gauss-Markov Processes" => "priors.md"
         ]
-        "Examples" => ["Sampling from Priors" => "prior_sampling.md"]
+        "Examples" => [
+            "Sampling from Priors" => "prior_sampling.md"
+            "Kalman Filtering" => "filtering.md"
+            "ODE Filtering" => "odefilter.md"
+        ]
     ],
 )
 
