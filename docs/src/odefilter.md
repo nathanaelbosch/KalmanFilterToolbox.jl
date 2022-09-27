@@ -6,6 +6,7 @@ import KalmanFilterToolbox as KFT
 ```
 
 Consider an initial value problem of the form
+
 ```math
 \begin{aligned}
 \dot{x}(t) = f(x(t), t) \qquad t \in [0, T], \qquad x(0) = x_0.
@@ -14,6 +15,7 @@ Consider an initial value problem of the form
 
 Probabilistic ODE solver approach:
 Rephrase the numerical ODE solution as a state estimation problem
+
 ```math
 \begin{aligned}
 x_0 &\sim \mathcal{N} \left( \mu_0, \Sigma_0 \right), \\
@@ -24,10 +26,11 @@ z(t_i) &= 0, \qquad i = 1, \dots, N. \\
 ```
 
 A filter for this specific problem is implemented in the following:
+
 ```@example 1
 function odefilter(f, x0, tspan; dt=5e-1, order=3, Prior=KFT.IWP)
     d, q = length(x0), order
-    D = d * (q+1)
+    D = d * (q + 1)
     prior = Prior(d, q)
     A, Q = KFT.discretize(prior, dt)
     b = zeros(D)
@@ -36,8 +39,8 @@ function odefilter(f, x0, tspan; dt=5e-1, order=3, Prior=KFT.IWP)
     z = zeros(d)
     R = Matrix(1e-6I, d, d)
 
-    m = [x0 f(x0) zeros(d, q-1)]'[:]
-    C = Diagonal([1e-6ones(d) 1e-6ones(d) ones(d, q-1)]'[:]) |> Matrix
+    m = [x0 f(x0) zeros(d, q - 1)]'[:]
+    C = Diagonal([1e-6ones(d) 1e-6ones(d) ones(d, q - 1)]'[:]) |> Matrix
 
     t = tspan[1]
     ts, xs = [t], [E0 * Gaussian(m, C)]
@@ -54,7 +57,9 @@ nothing # hide
 ```
 
 ## Example: Logistic equation
+
 Consider the logistic initial value problem
+
 ```math
 \begin{aligned}
 \dot{x}(t) = x(t) \cdot \left( 1 - x(t) \right), \qquad t \in [0, 10], \qquad
@@ -63,8 +68,9 @@ x(0) = 0.02.
 ```
 
 Running the ODE filter for this problem:
+
 ```@example 1
-f(x) = @. x * (1-x)
+f(x) = @. x * (1 - x)
 x0 = [0.02]
 tspan = (0.0, 10.0)
 
@@ -72,6 +78,5 @@ ts, xs = odefilter(f, x0, tspan)
 stack(x) = hcat(x...)'
 ms = stack(mean.(xs))
 Cs = stack(map(x -> diag(cov(x)), xs))
-plot(ts, ms, ribbon=1.96sqrt.(Cs),
-     marker=:o, markersize=2, markerstrokewidth=0.1)
+plot(ts, ms, ribbon=1.96sqrt.(Cs), marker=:o, markersize=2, markerstrokewidth=0.1)
 ```
