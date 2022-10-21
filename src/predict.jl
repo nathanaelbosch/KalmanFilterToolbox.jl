@@ -74,3 +74,34 @@ function sqrt_predict(
     CLnew = qr([A * CL QL]').R'
     return mnew, CLnew
 end
+
+function sqrt_get_backward_transition(m, CL, mpred, CLpred, A, QL)
+    d = length(m)
+    R = qr([QL A*CL; zero(A') CL]').R
+    SL = R[1:d, 1:d]'
+    G = R[1:d, d+1:end]' / SL
+    b = m - G * mpred
+    ΛL = R[d+1:end, d+1:end]'
+    return G, b, ΛL
+end
+
+"""
+filtron-style inversion:
+given distribution and affine gaussian kernel, compute the marginal
+and the backward kernel.
+"""
+function sqrt_invert(m, CL, A, b, QL)
+    d = length(m)
+    R = qr([QL A*CL; zero(A') CL]').R
+
+    mpred = A * m + b
+    CLpred = R[1:d, 1:d]'
+
+    G = R[1:d, d+1:end]' / CLpred
+    c = m - G * mpred
+    ΛL = R[d+1:end, d+1:end]'
+
+    @info "sqrt invert" CLpred
+
+    return (mpred, CLpred), (G, c, ΛL)
+end

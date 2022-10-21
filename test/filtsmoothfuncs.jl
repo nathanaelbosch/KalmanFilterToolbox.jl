@@ -43,6 +43,7 @@ using Random
         @test norm(Cf) < norm(Cp)
     end
 
+    local mf_sqrt, CfL_sqrt
     @testset "update (square-root)" begin
         RL = sqrt.(R)
         @test R ≈ RL * RL'
@@ -76,9 +77,29 @@ using Random
     end
 
     @testset "smooth (via backward transition)" begin
-        G, b, Λ = KalmanFilterToolbox.get_backward_transition(m, C, mp, Cp, A)
-        ms2, Cs2 = KalmanFilterToolbox.predict(mf, Cf, G, b, Λ)
+        G, c, Λ = KalmanFilterToolbox.get_backward_transition(m, C, mp, Cp, A)
+        ms2, Cs2 = KalmanFilterToolbox.predict(mf, Cf, G, c, Λ)
         @test ms ≈ ms2
         @test Cs ≈ Cs2
+    end
+
+    @testset "smooth (square-root; via sqrt backward transition)" begin
+        G, c, ΛL =
+            KalmanFilterToolbox.sqrt_get_backward_transition(m, CL, mp, CpL_sqrt, A, QL)
+        ms3, CsL = KalmanFilterToolbox.sqrt_predict(mf_sqrt, CfL_sqrt, G, c, ΛL)
+        @test ms ≈ ms3
+        @test Cs ≈ (CsL * CsL')
+    end
+
+    @testset "predict and backward kernel (aka invert; square-root)" begin
+        pred, bkernel = KalmanFilterToolbox.sqrt_invert(m, CL, A, b, QL)
+        _m, _CL = pred
+        @test mp == _m
+        @test Cp ≈ (_CL * _CL')
+
+        _G, _c, _ΛL = bkernel
+        _m, _CL = KalmanFilterToolbox.sqrt_predict(mf_sqrt, CfL_sqrt, _G, _c, _ΛL)
+        @test ms ≈ _m
+        @test Cs ≈ (_CL * _CL')
     end
 end
