@@ -2,12 +2,12 @@ import KalmanFilterToolbox as KFT
 using Test
 
 h = rand()
-σ = 1
+σ = 0.1
 
 @testset "Test non-preconditioned IWP (d=2,q=2)" begin
     d, q = 2, 2
 
-    iwp = KFT.IWP(d, q)
+    iwp = KFT.IWP(d, q, σ)
     Ah, Qh = KFT.discretize(iwp, h)
 
     AH_22_IBM = [
@@ -35,7 +35,7 @@ end
 @testset "Test non-preconditioned IWP (d=2,q=2)" begin
     d, q = 2, 2
 
-    iwp = KFT.IWP(d, q)
+    iwp = KFT.IWP(d, q, σ)
     Ah, Qh = KFT.discretize(iwp, h)
     A, Q = KFT.preconditioned_discretize(iwp)
     P = KFT.preconditioner(iwp, h)
@@ -47,7 +47,7 @@ end
 @testset "Check that IWP and SDE lead to the same" begin
     d, q = 1, 2
 
-    iwp = KFT.IWP(d, q)
+    iwp = KFT.IWP(d, q, σ)
     A_iwp, Q_iwp = KFT.discretize(iwp, h)
     A_sde, Q_sde = KFT.discretize(KFT.to_1d_sde(iwp), h)
 
@@ -58,8 +58,8 @@ end
 @testset "IOUP with zero drift is IWP" begin
     d, q = 2, 2
 
-    iwp = KFT.IWP(d, q)
-    ioup = KFT.IOUP(d, q, 0.0)
+    iwp = KFT.IWP(d, q, σ)
+    ioup = KFT.IOUP(d, q, 0.0, σ)
 
     A_iwp, Q_iwp = KFT.discretize(iwp, h)
     A_ioup, Q_ioup = KFT.discretize(ioup, h)
