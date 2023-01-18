@@ -7,14 +7,16 @@ Linear time-invariant SDE
 dx = F x dt + L dβ
 \\end{aligned}
 ```
-with drift F and dispersion L.
+with drift F and dispersion L, and diffusion σ.
 """
-struct LTISDE{AT<:AbstractMatrix,BT<:AbstractVecOrMat}
+struct LTISDE{AT<:AbstractMatrix,BT<:AbstractVecOrMat,ST<:Real}
     F::AT
     L::BT
+    σ::ST
 end
 drift(sde::LTISDE) = sde.F
 dispersion(sde::LTISDE) = sde.L
+diffusion(sde::LTISDE) = sde.σ
 
 """
     discretize(sde::LTISDE, dt::Real)
@@ -24,7 +26,7 @@ Compute the discrete transition via the matrix fraction decomposition.
 See also: [`matrix_fraction_decomposition`](@ref)
 """
 discretize(sde::LTISDE, dt::Real) =
-    matrix_fraction_decomposition(drift(sde), dispersion(sde), dt)
+    matrix_fraction_decomposition(drift(sde), diffusion(sde)^2 * dispersion(sde), dt)
 
 """
     matrix_fraction_decomposition(drift::AbstractMatrix, dispersion::AbstractVecOrMat, dt::Real)

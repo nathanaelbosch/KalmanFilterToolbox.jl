@@ -5,11 +5,14 @@
 Matern process. Typically, they are defined with a half-integer parameter ``ν``. To get
 the corresponding process here, set `num_derivatives = ν+1/2`.
 """
-Base.@kwdef struct Matern{I<:Int,R<:Real} <: AbstractGaussMarkovProcess
+Base.@kwdef struct Matern{I<:Int,R<:Real,D<:Real} <: AbstractGaussMarkovProcess
     wiener_process_dimension::I
     num_derivatives::I
     lengthscale::R
+    diffusion::D
 end
+Matern(; wiener_process_dimension, num_derivatives, lengthscale) =
+    Matern(; wiener_process_dimension, num_derivatives, lengthscale, diffusion=1.0)
 
 function to_1d_sde(p::Matern)
     q = p.num_derivatives
@@ -24,5 +27,5 @@ function to_1d_sde(p::Matern)
     L_breve = zeros(q + 1)
     L_breve[end] = 1.0
 
-    return LTISDE(F_breve, L_breve)
+    return LTISDE(F_breve, L_breve, diffusion(p))
 end

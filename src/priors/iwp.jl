@@ -8,10 +8,15 @@ By itself it does not have much utility right now, but together with
 it provides discrete transition matrices that are useful for defining
 discrete state-space models.
 """
-Base.@kwdef struct IWP{I<:Integer} <: AbstractGaussMarkovProcess
+Base.@kwdef struct IWP{I<:Integer,D<:Real} <: AbstractGaussMarkovProcess
     wiener_process_dimension::I
     num_derivatives::I
+    diffusion::D
 end
+IWP(wiener_process_dimension, num_derivatives) =
+    IWP(; wiener_process_dimension, num_derivatives, diffusion=1.0)
+IWP(; wiener_process_dimension, num_derivatives) =
+    IWP(; wiener_process_dimension, num_derivatives, diffusion=1.0)
 
 function discretize_1d(iwp::IWP, dt::Real)
     q = iwp.num_derivatives
@@ -23,7 +28,8 @@ function discretize_1d(iwp::IWP, dt::Real)
 
     e = (2 * q + 1 .- v .- v')
     fr = reverse(f)
-    Q_breve = @. dt^e / (e * fr * fr')
+    σ = diffusion(iwp)
+    Q_breve = @. σ^2 * dt^e / (e * fr * fr')
 
     return A_breve, Q_breve
 end
@@ -42,7 +48,8 @@ function preconditioned_discretize(iwp::IWP)
     q = iwp.num_derivatives
 
     A_breve = binomial.(q:-1:0, (q:-1:0)')
-    Q_breve = Cauchy(collect(q:-1.0:0.0), collect((q+1):-1.0:1.0))
+    σ = diffusion(iwp)
+    Q_breve = σ^2 * Cauchy(collect(q:-1.0:0.0), collect((q+1):-1.0:1.0))
 
     A = kron(I(d), A_breve)
     Q = kron(I(d), Q_breve)
@@ -55,5 +62,5 @@ function to_1d_sde(p::IWP)
     F_breve = diagm(1 => ones(q))
     L_breve = zeros(q + 1)
     L_breve[end] = 1.0
-    return LTISDE(F_breve, L_breve)
+    return LTISDE(F_breve, L_breve, diffusion(p))
 end
