@@ -26,7 +26,7 @@ Compute the discrete transition via the matrix fraction decomposition.
 See also: [`matrix_fraction_decomposition`](@ref)
 """
 discretize(sde::LTISDE, dt::Real) =
-    matrix_fraction_decomposition(drift(sde), diffusion(sde)^2 * dispersion(sde), dt)
+    matrix_fraction_decomposition(drift(sde), diffusion(sde) * dispersion(sde), dt)
 
 """
     matrix_fraction_decomposition(drift::AbstractMatrix, dispersion::AbstractVecOrMat, dt::Real)
