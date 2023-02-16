@@ -3,6 +3,7 @@ module KalmanFilterToolbox
 using LinearAlgebra
 using ForwardDiff
 using ToeplitzMatrices, SpecialMatrices
+using FastGaussQuadrature
 
 abstract type AbstractGaussMarkovProcess end
 include("priors/utils.jl")

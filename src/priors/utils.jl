@@ -14,6 +14,17 @@ function discretize(p::AbstractGaussMarkovProcess, dt::Real)
 end
 
 discretize_1d(p::AbstractGaussMarkovProcess, dt::Real) = discretize(to_1d_sde(p), dt)
+
+function discretize_sqrt(p::AbstractGaussMarkovProcess, dt::Real)
+    A_breve, QL_breve = discretize_1d_sqrt(p, dt)
+    d = p.wiener_process_dimension
+    A = kron(I(d), A_breve)
+    QL = kron(I(d), QL_breve)
+    return A, QL
+end
+discretize_1d_sqrt(p::AbstractGaussMarkovProcess, dt::Real) = discretize_sqrt(to_1d_sde(p), dt)
+
+
 """
     to_1d_sde(p::AbstractGaussMarkovProcess)
 
