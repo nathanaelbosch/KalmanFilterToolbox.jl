@@ -8,7 +8,7 @@ By itself it does not have much utility right now, but together with
 it provides discrete transition matrices that are useful for defining
 discrete state-space models.
 """
-Base.@kwdef struct IWP{I<:Integer,D<:Real} <: AbstractGaussMarkovProcess
+struct IWP{I<:Integer,D<:Real} <: AbstractGaussMarkovProcess
     wiener_process_dimension::I
     num_derivatives::I
     diffusion::D
@@ -17,6 +17,8 @@ IWP(wiener_process_dimension, num_derivatives) =
     IWP(; wiener_process_dimension, num_derivatives, diffusion=1.0)
 IWP(; wiener_process_dimension, num_derivatives) =
     IWP(; wiener_process_dimension, num_derivatives, diffusion=1.0)
+IWP(; wiener_process_dimension, num_derivatives, diffusion) =
+    IWP(wiener_process_dimension, num_derivatives, diffusion)
 
 function discretize_1d(iwp::IWP, dt::Real)
     q = iwp.num_derivatives
